@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 
 public class ejercicio1 extends JFrame {
 
@@ -24,24 +26,17 @@ public class ejercicio1 extends JFrame {
 
         //Le meto datos al combobox
 
-        comboBoxDepartamento.addItem("Alta Verapaz");
-        comboBoxDepartamento.addItem("Baja Verapaz");
-        comboBoxDepartamento.addItem("Chimaltenango");
-        comboBoxDepartamento.addItem("Chiquimula");
-        comboBoxDepartamento.addItem("Guatemala");
-        comboBoxDepartamento.addItem("Huehuetenango");
-        comboBoxDepartamento.addItem("Izabal");
-        comboBoxDepartamento.addItem("Jalapa");
-        comboBoxDepartamento.addItem("Jutiapa");
-        comboBoxDepartamento.addItem("Petén");
-        comboBoxDepartamento.addItem("Quetzaltenango");
-        comboBoxDepartamento.addItem("Quiché");
-        comboBoxDepartamento.addItem("San Marcos");
-        comboBoxDepartamento.addItem("Santa Rosa");
-        comboBoxDepartamento.addItem("Solalá");
-        comboBoxDepartamento.addItem("Suchitepéquez");
-        comboBoxDepartamento.addItem("Totonicapán");
-        comboBoxDepartamento.addItem("Zacapa");
+        String[] depa = {
+                "Guatemala", "Alta Verapaz", "Baja Verapaz", "Chimaltenango", "Chiquimula",
+                "El Progreso", "Escuintla", "Huehuetenango", "Izabal", "Jalapa",
+                "Jutiapa", "Petén", "Quetzaltenango", "Quiché", "Retalhuleu",
+                "Sacatepéquez", "San Marcos", "Santa Rosa", "Solalá", "Suchitepéquez",
+                "Totonicapán", "Zacapa"
+        };
+
+        for (String depto : depa) {//for each para recorrer cada uno de los departamentos
+            comboBoxDepartamento.addItem(depto);
+        }
 
         //La decoracion cute
 
@@ -102,6 +97,22 @@ public class ejercicio1 extends JFrame {
                     textFieldFechaNacimineto.setText(nacido.getFechaNacimiento().toString());
                 }catch (Exception ex)
                 {
+                    JOptionPane.showMessageDialog(null,"El campo (Codigo) esta vacio o no existe el registro a eliminar");
+                }
+            }
+        });
+
+        //Boton para borrar bien sabroson
+
+        buttonEliminar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int IdCodigo = textFieldCodigo.getText().isEmpty() ? 0 : Integer.parseInt(textFieldCodigo.getText());
+                try{
+                    new DatosService().deleteDatos(IdCodigo);
+                    JOptionPane.showMessageDialog(null, "Datos eliminados exitosamente");
+                }catch (Exception ex)
+                {
                     JOptionPane.showMessageDialog(null,"Error en la base de datos " + ex.getMessage());
                 }
             }
@@ -117,6 +128,7 @@ public class ejercicio1 extends JFrame {
         frame. setSize(500, 300);;
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
+
     }
 
     //Las cositas que voy a ir poniendo en el Frame
