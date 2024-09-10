@@ -27,6 +27,7 @@ public class principal extends JFrame {
         buttonEjercicio1.setBounds(150, 100, 200, 30); // Posición y tamaño
         buttonEjercicio2.setBounds(150, 150, 200, 30);
         buttonEjercicio3.setBounds(150, 200, 200, 30);
+        buttonCerrar.setBounds(150,250,200,30);
 
         //Botón para ir al formulario 1
 
@@ -62,6 +63,12 @@ public class principal extends JFrame {
                dispose();
             }
         });
+        buttonCerrar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
     }
 
     //Mi mero MAIN
@@ -83,4 +90,5 @@ public class principal extends JFrame {
     private JButton buttonEjercicio1;
     private JButton buttonEjercicio2;
     private JButton buttonEjercicio3;
+    private JButton buttonCerrar;
 }
