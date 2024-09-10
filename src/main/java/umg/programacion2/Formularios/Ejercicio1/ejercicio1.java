@@ -6,18 +6,20 @@ import umg.programacion2.DataBase.Service.DatosService;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
+
 
 public class ejercicio1 extends JFrame {
 
     //Constructor bien chilero del ejer wan
 
     public ejercicio1() {
+
+
         // Configuramos el contenido del JFrame con el panel jFormEjercicio1
+
         setContentPane(jEjericio1);
         setTitle("Ejercicio 1");
         setSize(500, 300); // Establecer tamaño
@@ -27,7 +29,7 @@ public class ejercicio1 extends JFrame {
         //Le meto datos al combobox
 
         String[] depa = {
-                "Guatemala", "Alta Verapaz", "Baja Verapaz", "Chimaltenango", "Chiquimula",
+                "","Guatemala", "Alta Verapaz", "Baja Verapaz", "Chimaltenango", "Chiquimula",
                 "El Progreso", "Escuintla", "Huehuetenango", "Izabal", "Jalapa",
                 "Jutiapa", "Petén", "Quetzaltenango", "Quiché", "Retalhuleu",
                 "Sacatepéquez", "San Marcos", "Santa Rosa", "Solalá", "Suchitepéquez",
@@ -54,6 +56,7 @@ public class ejercicio1 extends JFrame {
         buttonActualizar.setBounds(150, 200, 200, 30);  // Tercer botón (Actualizar)
         buttonEliminar.setBounds(150, 250, 200, 30);   // Cuarto botón (Eliminar)*/
 
+        //Aca regreso al menu principal
 
         buttonRegresar.addActionListener(new ActionListener() {
             @Override
@@ -73,6 +76,14 @@ public class ejercicio1 extends JFrame {
                 nacido.setApellido(textFieldApellido.getText());
                 nacido.setDepartamento(comboBoxDepartamento.getSelectedItem().toString());
                 nacido.setFechaNacimiento(new Timestamp(System.currentTimeMillis()));
+                try {
+                    Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(textFieldFechaNacimineto.getText());
+                    Timestamp timestamp = new Timestamp(parsedDate.getTime());
+                    nacido.setFechaNacimiento(timestamp);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Formato de fecha no válido. Use yyyy-MM-dd HH:mm:ss");
+                    return;
+                }
                 try{
                     new DatosService().createDatos(nacido);
                     JOptionPane.showMessageDialog(null, "Datos guardados exitosamente");
@@ -97,7 +108,7 @@ public class ejercicio1 extends JFrame {
                     textFieldFechaNacimineto.setText(nacido.getFechaNacimiento().toString());
                 }catch (Exception ex)
                 {
-                    JOptionPane.showMessageDialog(null,"El campo (Codigo) esta vacio o no existe el registro a eliminar");
+                    JOptionPane.showMessageDialog(null,"El campo (Codigo) esta vacio o no existe el registro a buscar");
                 }
             }
         });
@@ -111,9 +122,39 @@ public class ejercicio1 extends JFrame {
                 try{
                     new DatosService().deleteDatos(IdCodigo);
                     JOptionPane.showMessageDialog(null, "Datos eliminados exitosamente");
+                    limpiar();
                 }catch (Exception ex)
                 {
                     JOptionPane.showMessageDialog(null,"Error en la base de datos " + ex.getMessage());
+                }
+            }
+        });
+
+        //Aca lo actualizamos
+
+        buttonActualizar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DatosModel nacido = new DatosModel();
+                nacido.setCodigo(textFieldCodigo.getText().isEmpty() ? 0 : Integer.parseInt(textFieldCodigo.getText()));
+                nacido.setNombre(textFieldNombre.getText());
+                nacido.setApellido(textFieldApellido.getText());
+                nacido.setDepartamento(comboBoxDepartamento.getSelectedItem().toString());
+                // Convertir el texto de la fecha a Timestamp
+                try {
+                    Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(textFieldFechaNacimineto.getText());
+                    Timestamp timestamp = new Timestamp(parsedDate.getTime());
+                    nacido.setFechaNacimiento(timestamp);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Formato de fecha no válido. Use yyyy-MM-dd HH:mm:ss");
+                    return;
+                }
+                try{
+                new DatosService().updateDatos(nacido);
+                JOptionPane.showMessageDialog(null, "Datos actualizados exitosamente");
+                }catch (Exception ex)
+                {
+                    JOptionPane.showMessageDialog(null,"El campo (Codigo) esta vacio o no existe el registro a actualizar");
                 }
             }
         });
@@ -129,6 +170,18 @@ public class ejercicio1 extends JFrame {
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
 
+    }
+
+    //Metodo de limpieza
+
+    public void limpiar()
+    {
+        // Limpiar los campos después de la eliminación
+        textFieldCodigo.setText("");
+        textFieldNombre.setText("");
+        textFieldApellido.setText("");
+        comboBoxDepartamento.setSelectedIndex(0);
+        textFieldFechaNacimineto.setText("");
     }
 
     //Las cositas que voy a ir poniendo en el Frame
