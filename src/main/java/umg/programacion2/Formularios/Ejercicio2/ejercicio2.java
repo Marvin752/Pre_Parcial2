@@ -2,6 +2,7 @@ package umg.programacion2.Formularios.Ejercicio2;
 
 import umg.programacion2.DataBase.Model.TelegramModel;
 import umg.programacion2.DataBase.Service.TelegramService;
+import umg.programacion2.Formularios.Principal.principal;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -31,6 +32,10 @@ public class ejercicio2 extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
+                principal principal = new principal();
+                principal.setVisible(true);
+                principal.setSize(500, 400);
+                principal.setLocationRelativeTo(null);
             }
         });
 
@@ -112,21 +117,29 @@ public class ejercicio2 extends JFrame {
         buttonEliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(textFieldIdUsuario.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null,"El campo (IdUsuario) no puede estar vacio");
+                // Verificar si el campo de texto está vacío
+                if (textFieldIdUsuario.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "El campo (IdUsuario) no puede estar vacío");
                     return;
                 }
-                int UsuarioId = textFieldIdUsuario.getText().isEmpty() ? 0 : Integer.parseInt(textFieldIdUsuario.getText());
-                try {
-                    new TelegramService().deleteUsuario(UsuarioId);
-                    JOptionPane.showMessageDialog(null,"El usuario se eliminado correctamente");
-                    limpiar();
 
-                }catch (Exception ex)
-                {
-                    JOptionPane.showMessageDialog(null,"Error en la base de datos " + ex.getMessage());
+                // Convertir el texto a entero
+                int usuarioId = Integer.parseInt(textFieldIdUsuario.getText().trim());
+
+                // Confirmar la eliminación
+                int confirmar = JOptionPane.showConfirmDialog(null, "¿Desea eliminar este usuario?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                if (confirmar == JOptionPane.YES_OPTION) {
+                    try {
+                        // Llamar al método para eliminar usuario
+                        new TelegramService().deleteUsuario(usuarioId);
+                        JOptionPane.showMessageDialog(null, "Usuario eliminado correctamente");
+                        limpiar(); // Limpiar los campos
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error en la base de datos: " + ex.getMessage());
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se eliminó el usuario");
                 }
-
             }
         });
 
@@ -140,44 +153,49 @@ public class ejercicio2 extends JFrame {
                     return;
                 }
 
-                TelegramModel Usuario = new TelegramModel();
-                // Establecer el IdUsuario
-                Usuario.setIdusuario(Integer.parseInt(textFieldIdUsuario.getText()));
-                Usuario.setNombre(textFieldNombre.getText());
-                Usuario.setCarne(textFieldCarne.getText());
-                Usuario.setCorreo(textFieldCorreo.getText());
+                TelegramModel usuario = new TelegramModel();
+                usuario.setIdusuario(Integer.parseInt(textFieldIdUsuario.getText()));
+                usuario.setNombre(textFieldNombre.getText());
+                usuario.setCarne(textFieldCarne.getText());
+                usuario.setCorreo(textFieldCorreo.getText());
 
                 // Validar si el Telegram ID es nulo o 0
                 if (textFieldTelegramId.getText().isEmpty() || textFieldTelegramId.getText().equals("0")) {
-                    Usuario.setTelegramid(null);
+                    usuario.setTelegramid(null);
                 } else {
-                    Usuario.setTelegramid(Long.parseLong(textFieldTelegramId.getText()));
+                    usuario.setTelegramid(Long.parseLong(textFieldTelegramId.getText()));
                 }
 
-                Usuario.setSeccion(comboBoxSeccion.getSelectedItem().toString());
-                Usuario.setActivo(checkBoxActivo.isSelected() ? "1" : "0");
+                usuario.setSeccion(comboBoxSeccion.getSelectedItem().toString());
+                usuario.setActivo(checkBoxActivo.isSelected() ? "1" : "0");
 
-                try {
-                    TelegramService service = new TelegramService();
+                // Confirmación antes de actualizar
+                int actualizar = JOptionPane.showConfirmDialog(null, "¿Quieres actualizar el usuario?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                if (actualizar == JOptionPane.YES_OPTION) {
+                    try {
+                        TelegramService service = new TelegramService();
 
-                    //Obtengo el correo actual del usuario desde la base de datos
-                    String correoActual = service.getCorreoByIdUsuario(Usuario.getIdusuario());
+                        // Obtener el correo actual del usuario desde la base de datos
+                        String correoActual = service.getCorreoByIdUsuario(usuario.getIdusuario());
 
-                    //Verifico si el correo ingresado es diferente al correo actual
-                    if (!textFieldCorreo.getText().equals(correoActual)) {
-                        //Verifico si el nuevo correo ya está en uso por otro usuario
-                        if (service.verificarCorreo(textFieldCorreo.getText())) {
-                            JOptionPane.showMessageDialog(null, "El correo ya está en uso por otro usuario.");
-                            return; // Detenemos la ejecución si el correo ya está en uso
+                        // Verificar si el correo ingresado es diferente al correo actual
+                        if (!textFieldCorreo.getText().equals(correoActual)) {
+                            // Verificar si el nuevo correo ya está en uso por otro usuario
+                            if (service.verificarCorreo(textFieldCorreo.getText())) {
+                                JOptionPane.showMessageDialog(null, "El correo ya está en uso por otro usuario.");
+                                return; // Detener la ejecución si el correo ya está en uso
+                            }
                         }
-                    }
 
-                    // Actualizar el usuario si todo está bien
-                    service.updateUsuario(Usuario);
-                    JOptionPane.showMessageDialog(null, "El usuario se actualizó correctamente");
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Error en la base de datos: " + ex.getMessage());
-                    ex.printStackTrace(); // Imprimir la excepción para depuración
+                        // Actualizar el usuario si todo está bien
+                        service.updateUsuario(usuario);
+                        JOptionPane.showMessageDialog(null, "El usuario se actualizó correctamente");
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error en la base de datos: " + ex.getMessage());
+                        ex.printStackTrace(); // Imprimir la excepción para depuración
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se actualizó el usuario");
                 }
             }
         });
@@ -185,14 +203,13 @@ public class ejercicio2 extends JFrame {
 
     //Puros Main de prueba no mas
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Telegram");
-        frame.setContentPane(new ejercicio2().jEjericio2);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(700,400);
-        frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
-    }
+    /*public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            ejercicio2 frame = new ejercicio2();
+            frame.setVisible(true);
+            frame.setLocationRelativeTo(null);
+        });
+    }*/
 
     //Metodo para dejar clean all
 

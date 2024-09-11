@@ -2,6 +2,8 @@ package umg.programacion2.Formularios.Ejercicio1;
 
 import umg.programacion2.DataBase.Model.DatosModel;
 import umg.programacion2.DataBase.Service.DatosService;
+import umg.programacion2.Formularios.Ejercicio3.ejercicio3;
+import umg.programacion2.Formularios.Principal.principal;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -62,6 +64,10 @@ public class ejercicio1 extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
+                principal principal = new principal();
+                principal.setVisible(true);
+                principal.setSize(500, 400);
+                principal.setLocationRelativeTo(null);
             }
         });
 
@@ -90,7 +96,6 @@ public class ejercicio1 extends JFrame {
                 try{
                     new DatosService().createDatos(nacido);
                     JOptionPane.showMessageDialog(null, "Datos guardados exitosamente");
-                    textFieldFechaNacimineto.setText(new Timestamp(System.currentTimeMillis()).toString());
                 }catch (Exception ex)
                 {
                     JOptionPane.showMessageDialog(null,"Erro al guardar al niño " + ex.getMessage());
@@ -122,18 +127,29 @@ public class ejercicio1 extends JFrame {
         buttonEliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Verificar si el campo de texto está vacío
                 if (textFieldCodigo.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null,"El campo (Codigo) no puede estar vacio");
+                    JOptionPane.showMessageDialog(null, "El campo (Codigo) no puede estar vacío");
                     return;
                 }
-                    int IdCodigo = textFieldCodigo.getText().isEmpty() ? 0 : Integer.parseInt(textFieldCodigo.getText());
+
+                // Convertir el texto a entero
+                int idCodigo = Integer.parseInt(textFieldCodigo.getText().trim());
+
+                // Confirmar la eliminación
+                int confirmar = JOptionPane.showConfirmDialog(null, "¿Desea eliminar estos datos?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                if (confirmar == JOptionPane.YES_OPTION) {
                     try {
-                        new DatosService().deleteDatos(IdCodigo);
+                        // Llamar al método para eliminar datos
+                        new DatosService().deleteDatos(idCodigo);
                         JOptionPane.showMessageDialog(null, "Datos eliminados exitosamente");
-                        limpiar();
+                        limpiar(); // Limpiar los campos
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, "Error en la base de datos " + ex.getMessage());
+                        JOptionPane.showMessageDialog(null, "Error en la base de datos: " + ex.getMessage());
                     }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se eliminaron los datos");
+                }
             }
         });
 
@@ -143,15 +159,16 @@ public class ejercicio1 extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (textFieldCodigo.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null,"El campo (Codigo) no puede estar vacio");
+                    JOptionPane.showMessageDialog(null, "El campo (Codigo) no puede estar vacío");
                     return;
                 }
+
                 DatosModel nacido = new DatosModel();
-                nacido.setCodigo(textFieldCodigo.getText().isEmpty() ? 0 : Integer.parseInt(textFieldCodigo.getText()));
+                nacido.setCodigo(Integer.parseInt(textFieldCodigo.getText()));
                 nacido.setNombre(textFieldNombre.getText());
                 nacido.setApellido(textFieldApellido.getText());
                 nacido.setDepartamento(comboBoxDepartamento.getSelectedItem().toString());
-                // Convertir el texto de la fecha a Timestamp
+
                 try {
                     Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(textFieldFechaNacimineto.getText());
                     Timestamp timestamp = new Timestamp(parsedDate.getTime());
@@ -160,12 +177,18 @@ public class ejercicio1 extends JFrame {
                     JOptionPane.showMessageDialog(null, "Formato de fecha no válido. Use yyyy-MM-dd HH:mm:ss");
                     return;
                 }
-                try{
-                new DatosService().updateDatos(nacido);
-                JOptionPane.showMessageDialog(null, "Datos actualizados exitosamente");
-                }catch (Exception ex)
-                {
-                    JOptionPane.showMessageDialog(null,"El campo (Codigo) esta vacio o no existe el registro a actualizar");
+
+                // Confirmación antes de actualizar
+                int actualizar = JOptionPane.showConfirmDialog(null, "¿Quieres actualizar los datos?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                if (actualizar == JOptionPane.YES_OPTION) {
+                    try {
+                        new DatosService().updateDatos(nacido);
+                        JOptionPane.showMessageDialog(null, "Datos actualizados exitosamente");
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error al actualizar los datos: " + ex.getMessage());
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se actualizaron los datos");
                 }
             }
         });
@@ -173,15 +196,13 @@ public class ejercicio1 extends JFrame {
 
     //Puros Main de prueba no mas
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Registro Civil");
-        frame.setContentPane(new ejercicio1().jEjericio1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame. setSize(500, 300);;
-        frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
-
-    }
+    /*public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            ejercicio1 frame = new ejercicio1();
+            frame.setVisible(true);
+            frame.setLocationRelativeTo(null);
+        });
+    }*/
 
     //Metodo de limpieza
 
