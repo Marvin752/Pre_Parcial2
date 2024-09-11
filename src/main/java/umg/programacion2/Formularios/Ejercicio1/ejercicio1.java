@@ -21,7 +21,7 @@ public class ejercicio1 extends JFrame {
         // Configuramos el contenido del JFrame con el panel jFormEjercicio1
 
         setContentPane(jEjericio1);
-        setTitle("Ejercicio 1");
+        setTitle("Registro Civil");
         setSize(500, 300); // Establecer tamaño
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Para cerrar solo esta ventana
         setLocationRelativeTo(null); // Centrar la ventana
@@ -75,18 +75,22 @@ public class ejercicio1 extends JFrame {
                 nacido.setNombre(textFieldNombre.getText());
                 nacido.setApellido(textFieldApellido.getText());
                 nacido.setDepartamento(comboBoxDepartamento.getSelectedItem().toString());
-                nacido.setFechaNacimiento(new Timestamp(System.currentTimeMillis()));
+                if (textFieldNombre.getText().trim().isEmpty() && textFieldApellido.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Tanto el nombre como el apellido no pueden estar vacíos.");
+                    return;
+                }
                 try {
                     Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(textFieldFechaNacimineto.getText());
                     Timestamp timestamp = new Timestamp(parsedDate.getTime());
                     nacido.setFechaNacimiento(timestamp);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Formato de fecha no válido. Use yyyy-MM-dd HH:mm:ss");
-                    return;
+                    JOptionPane.showMessageDialog(null, "Formato de fecha no válido, se configuro a la fecha actual");
+                    nacido.setFechaNacimiento(new Timestamp(System.currentTimeMillis()));;
                 }
                 try{
                     new DatosService().createDatos(nacido);
                     JOptionPane.showMessageDialog(null, "Datos guardados exitosamente");
+                    textFieldFechaNacimineto.setText(new Timestamp(System.currentTimeMillis()).toString());
                 }catch (Exception ex)
                 {
                     JOptionPane.showMessageDialog(null,"Erro al guardar al niño " + ex.getMessage());
@@ -118,15 +122,18 @@ public class ejercicio1 extends JFrame {
         buttonEliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int IdCodigo = textFieldCodigo.getText().isEmpty() ? 0 : Integer.parseInt(textFieldCodigo.getText());
-                try{
-                    new DatosService().deleteDatos(IdCodigo);
-                    JOptionPane.showMessageDialog(null, "Datos eliminados exitosamente");
-                    limpiar();
-                }catch (Exception ex)
-                {
-                    JOptionPane.showMessageDialog(null,"Error en la base de datos " + ex.getMessage());
+                if (textFieldCodigo.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null,"El campo (Codigo) no puede estar vacio");
+                    return;
                 }
+                    int IdCodigo = textFieldCodigo.getText().isEmpty() ? 0 : Integer.parseInt(textFieldCodigo.getText());
+                    try {
+                        new DatosService().deleteDatos(IdCodigo);
+                        JOptionPane.showMessageDialog(null, "Datos eliminados exitosamente");
+                        limpiar();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error en la base de datos " + ex.getMessage());
+                    }
             }
         });
 
@@ -135,6 +142,10 @@ public class ejercicio1 extends JFrame {
         buttonActualizar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (textFieldCodigo.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null,"El campo (Codigo) no puede estar vacio");
+                    return;
+                }
                 DatosModel nacido = new DatosModel();
                 nacido.setCodigo(textFieldCodigo.getText().isEmpty() ? 0 : Integer.parseInt(textFieldCodigo.getText()));
                 nacido.setNombre(textFieldNombre.getText());
@@ -163,7 +174,7 @@ public class ejercicio1 extends JFrame {
     //Puros Main de prueba no mas
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("ejercicio1");
+        JFrame frame = new JFrame("Registro Civil");
         frame.setContentPane(new ejercicio1().jEjericio1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame. setSize(500, 300);;

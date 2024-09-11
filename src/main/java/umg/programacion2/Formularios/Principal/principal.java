@@ -75,7 +75,7 @@ public class principal extends JFrame {
 
     public static void main(String[] args) {
 
-        JFrame frame = new JFrame("principal");
+        JFrame frame = new JFrame("Menu Principal");
         frame.setContentPane(new principal().jFormPrincipal);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500,400);
