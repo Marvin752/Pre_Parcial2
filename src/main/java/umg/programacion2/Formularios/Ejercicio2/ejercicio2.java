@@ -15,7 +15,7 @@ public class ejercicio2 extends JFrame {
         // Configuramos el contenido del JFrame con el panel jFormEjercicio1
         setContentPane(jEjericio2);
         setTitle("Telegram");
-        setSize(600, 400); // Establecer tamaño
+        setSize(700, 400); // Establecer tamaño
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Para cerrar solo esta ventana
         setLocationRelativeTo(null); // Centrar la ventana
 
@@ -176,7 +176,7 @@ public class ejercicio2 extends JFrame {
         JFrame frame = new JFrame("Telegram");
         frame.setContentPane(new ejercicio2().jEjericio2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600,400);
+        frame.setSize(700,400);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }
