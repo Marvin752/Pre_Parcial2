@@ -3,6 +3,7 @@ package umg.programacion2.DataBase.Dao;
 import umg.programacion2.DataBase.DbConnection.DatabaseConnection;
 import umg.programacion2.DataBase.Model.TelegramModel;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,5 +117,28 @@ public class TelegramDao {
         return false; // El correo no existe
     }
 
+    // Obtener el correo actual del usuario por su IdUsuario
+
+    public String getCorreoByIdUsuario(int idUsuario) throws SQLException {
+        String correo = null;
+        String query = "SELECT correo FROM tb_usuarios WHERE idUsuario = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idUsuario);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                correo = rs.getString("correo");
+            }
+        } catch (SQLException ex) {
+            throw new SQLException("Error al obtener el correo del usuario: " + ex.getMessage());
+        }
+
+        return correo;
+    }
 }
+
+
 

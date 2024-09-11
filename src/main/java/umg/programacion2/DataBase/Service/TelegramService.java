@@ -43,5 +43,11 @@ public class TelegramService {
     public boolean verificarCorreo(String correo) throws SQLException {
         return telegramDao.existeCorreo(correo);
     }
+
+    // Obtener el correo actual del usuario por su ID
+
+    public String getCorreoByIdUsuario(int idUsuario) throws SQLException {
+        return telegramDao.getCorreoByIdUsuario(idUsuario); // Llama al DAO
+    }
 }
 

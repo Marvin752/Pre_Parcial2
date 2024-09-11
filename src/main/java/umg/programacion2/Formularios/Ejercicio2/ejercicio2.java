@@ -60,7 +60,6 @@ public class ejercicio2 extends JFrame {
             }
         });
 
-
         //Para crear mis nuevos correos bien locos
 
         buttonGuardar.addActionListener(new ActionListener() {
@@ -147,27 +146,41 @@ public class ejercicio2 extends JFrame {
                 Usuario.setNombre(textFieldNombre.getText());
                 Usuario.setCarne(textFieldCarne.getText());
                 Usuario.setCorreo(textFieldCorreo.getText());
+
+                // Validar si el Telegram ID es nulo o 0
                 if (textFieldTelegramId.getText().isEmpty() || textFieldTelegramId.getText().equals("0")) {
                     Usuario.setTelegramid(null);
                 } else {
                     Usuario.setTelegramid(Long.parseLong(textFieldTelegramId.getText()));
                 }
+
                 Usuario.setSeccion(comboBoxSeccion.getSelectedItem().toString());
-                if (checkBoxActivo.isSelected()) {
-                    Usuario.setActivo("1");
-                } else {
-                    Usuario.setActivo("0");
-                }
+                Usuario.setActivo(checkBoxActivo.isSelected() ? "1" : "0");
 
                 try {
-                    new TelegramService().updateUsuario(Usuario);
+                    TelegramService service = new TelegramService();
+
+                    //Obtengo el correo actual del usuario desde la base de datos
+                    String correoActual = service.getCorreoByIdUsuario(Usuario.getIdusuario());
+
+                    //Verifico si el correo ingresado es diferente al correo actual
+                    if (!textFieldCorreo.getText().equals(correoActual)) {
+                        //Verifico si el nuevo correo ya está en uso por otro usuario
+                        if (service.verificarCorreo(textFieldCorreo.getText())) {
+                            JOptionPane.showMessageDialog(null, "El correo ya está en uso por otro usuario.");
+                            return; // Detenemos la ejecución si el correo ya está en uso
+                        }
+                    }
+
+                    // Actualizar el usuario si todo está bien
+                    service.updateUsuario(Usuario);
                     JOptionPane.showMessageDialog(null, "El usuario se actualizó correctamente");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error en la base de datos: " + ex.getMessage());
+                    ex.printStackTrace(); // Imprimir la excepción para depuración
                 }
             }
         });
-
     }
 
     //Puros Main de prueba no mas
